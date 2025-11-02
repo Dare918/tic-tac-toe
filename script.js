@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const resultPanel = document.getElementById('result-panel');
     const resultMessage = document.getElementById('result-message');
     const playAgainBtn = document.getElementById('play-again-btn');
+    const themeToggle = document.getElementById('theme-toggle'); // Theme toggle button
+    
+    // Mode selection elements
+    const modeSelectionOverlay = document.getElementById('mode-selection-overlay');
+    const humanModeBtn = document.getElementById('human-mode-btn');
+    const computerModeBtn = document.getElementById('computer-mode-btn');
     
     // Statistics elements
     const winsValue = document.getElementById('wins-value');
@@ -19,8 +25,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameActive = true;
     let gameMode = 'human'; // 'human' or 'computer'
     
-    // Computer difficulty - 50% win rate means 50% optimal moves, 50% random moves
-    const COMPUTER_WIN_RATE = 0.5; // 50% win rate
+    // Theme state
+    let isDarkMode = false;
+    
+    // Computer difficulty - 70% win rate means 70% optimal moves, 30% random moves
+    const COMPUTER_WIN_RATE = 0.7; // 70% win rate
     
     // Statistics
     let stats = {
@@ -35,7 +44,38 @@ document.addEventListener('DOMContentLoaded', () => {
         [0, 4, 8], [2, 4, 6]             // diagonals
     ];
     
+    // Theme toggle functionality
+    themeToggle.addEventListener('click', () => {
+        isDarkMode = !isDarkMode;
+        document.body.classList.toggle('dark-theme', isDarkMode);
+        themeToggle.textContent = isDarkMode ? '☀️' : '🌙';
+    });
+    
     // Handle mode selection
+    humanModeBtn.addEventListener('click', () => {
+        gameMode = 'human';
+        modeSelectionOverlay.style.display = 'none';
+        initializeGame();
+    });
+    
+    computerModeBtn.addEventListener('click', () => {
+        gameMode = 'computer';
+        modeSelectionOverlay.style.display = 'none';
+        initializeGame();
+    });
+    
+    // Initialize game based on selected mode
+    const initializeGame = () => {
+        // Hide mode selection radio buttons during gameplay
+        document.querySelector('.mode-selection').style.display = 'none';
+        
+        // Update status message
+        statusElement.textContent = gameMode === 'computer' 
+            ? "Your turn (X)" 
+            : `Player ${currentPlayer}'s turn`;
+    };
+    
+    // Handle mode selection change during gameplay (restart button)
     const modeRadios = document.querySelectorAll('input[name="mode"]');
     modeRadios.forEach(radio => {
         radio.addEventListener('change', () => {
@@ -52,15 +92,20 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check if cell is already filled or game is inactive
         if (gameBoard[index] !== '' || !gameActive) return;
         
-        // For computer mode, only allow human player to make moves
-        if (gameMode === 'computer' && currentPlayer === 'O') return;
+        // For computer mode, only allow human player (X) to make moves
+        // Computer (O) moves are handled automatically
+        if (gameMode === 'computer' && currentPlayer !== 'X') return;
         
         // Update cell and game board
         makeMove(index);
         
-        // If in computer mode and game is still active, let computer make a move
+        // If in computer mode and it's now computer's turn, let computer make a move
         if (gameMode === 'computer' && gameActive && currentPlayer === 'O') {
-            setTimeout(makeComputerMove, 500); // Small delay for better UX
+            setTimeout(() => {
+                if (gameActive && currentPlayer === 'O') {
+                    makeComputerMove();
+                }
+            }, 500); // 500ms delay
         }
     };
     
@@ -124,14 +169,15 @@ document.addEventListener('DOMContentLoaded', () => {
         overlay.classList.add('show');
     };
     
-    // Computer makes a move with 50% win rate
+    // Computer makes a move with 70% win rate
     const makeComputerMove = () => {
-        if (!gameActive) return;
+        // Double-check that it's the computer's turn and game is active
+        if (!gameActive || currentPlayer !== 'O' || gameMode !== 'computer') return;
         
         let moveIndex;
         
-        // 50% chance to make an optimal move, 50% chance to make a random move
-        // This gives the computer a 50% win rate overall
+        // 70% chance to make an optimal move, 30% chance to make a random move
+        // This gives the computer a 70% win rate overall
         if (Math.random() < COMPUTER_WIN_RATE) {
             // Optimal move (minimax algorithm)
             moveIndex = getBestMove();
@@ -140,7 +186,33 @@ document.addEventListener('DOMContentLoaded', () => {
             moveIndex = getRandomMove();
         }
         
-        makeMove(moveIndex);
+        // Ensure we have a valid move
+        if (moveIndex !== undefined && moveIndex >= 0) {
+            makeMove(moveIndex);
+        } else {
+            // Fallback to random move if there's an issue
+            moveIndex = getRandomMove();
+            if (moveIndex !== undefined && moveIndex >= 0) {
+                makeMove(moveIndex);
+            }
+        }
+    };
+    
+    // Get a random valid move
+    const getRandomMove = () => {
+        const emptyCells = [];
+        gameBoard.forEach((cell, index) => {
+            if (cell === '') {
+                emptyCells.push(index);
+            }
+        });
+        
+        if (emptyCells.length > 0) {
+            const randomIndex = Math.floor(Math.random() * emptyCells.length);
+            return emptyCells[randomIndex];
+        }
+        
+        return -1; // No move available
     };
     
     // Get optimal move using minimax algorithm
@@ -215,23 +287,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
             return bestScore;
         }
-    };
-    
-    // Get a random valid move
-    const getRandomMove = () => {
-        const emptyCells = [];
-        gameBoard.forEach((cell, index) => {
-            if (cell === '') {
-                emptyCells.push(index);
-            }
-        });
-        
-        if (emptyCells.length > 0) {
-            const randomIndex = Math.floor(Math.random() * emptyCells.length);
-            return emptyCells[randomIndex];
-        }
-        
-        return -1; // No move available
     };
     
     // Check for win for a specific player
