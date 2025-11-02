@@ -4,15 +4,76 @@
     box-sizing: border-box;
 }
 
+/* Light theme variables */
+:root {
+    --background-color: #000;
+    --container-bg: #ffc0cb; /* Pink */
+    --text-color: #000;
+    --cell-bg: #fff;
+    --cell-border: #000;
+    --winning-cell-bg: #ffb6c1;
+    --button-bg: #ff69b4;
+    --button-hover: #ff1493;
+    --status-text: #000;
+    --panel-bg: #ffc0cb;
+    --stat-item-bg: rgba(255, 255, 255, 0.5);
+    --win-message: #006400;
+    --lose-message: #8b0000;
+    --draw-message: #ff8c00;
+}
+
+/* Dark theme variables */
+.dark-theme {
+    --background-color: #1a1a1a;
+    --container-bg: #2d2d2d;
+    --text-color: #fff;
+    --cell-bg: #3d3d3d;
+    --cell-border: #fff;
+    --winning-cell-bg: #4d4d4d;
+    --button-bg: #5a5a5a;
+    --button-hover: #7a7a7a;
+    --status-text: #fff;
+    --panel-bg: #2d2d2d;
+    --stat-item-bg: rgba(255, 255, 255, 0.1);
+    --win-message: #90ee90;
+    --lose-message: #ff7f7f;
+    --draw-message: #ffd580;
+}
+
 body {
     font-family: 'Arial', sans-serif;
-    background-color: #000;
+    background-color: var(--background-color);
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    color: #333;
+    color: var(--text-color);
     position: relative;
+}
+
+/* Theme toggle button */
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    background-color: var(--button-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 10px 15px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 1.2em;
+    transition: background-color 0.3s;
+    z-index: 100;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.theme-toggle:hover {
+    background-color: var(--button-hover);
 }
 
 /* Sentient AGI Logo Background */
@@ -33,6 +94,63 @@ body::before {
     pointer-events: none;
 }
 
+/* Mode Selection Panel */
+.mode-selection-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+}
+
+.mode-selection-panel {
+    background-color: var(--panel-bg);
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    max-width: 400px;
+    width: 80%;
+    border: 2px solid var(--cell-border);
+}
+
+.mode-selection-panel h2 {
+    margin-bottom: 20px;
+    font-size: 1.8em;
+    color: var(--text-color);
+}
+
+.mode-selection-panel p {
+    font-size: 1.2em;
+    margin-bottom: 30px;
+    color: var(--text-color);
+}
+
+.mode-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.mode-btn {
+    background-color: var(--button-bg);
+    color: var(--text-color);
+    border: none;
+    padding: 15px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.1em;
+    transition: background-color 0.3s;
+}
+
+.mode-btn:hover {
+    background-color: var(--button-hover);
+}
+
 .main-container {
     display: flex;
     gap: 30px;
@@ -49,7 +167,7 @@ body::before {
 
 .container {
     text-align: center;
-    background-color: #ffc0cb; /* Pink */
+    background-color: var(--container-bg);
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 4px 8px rgba(255, 255, 255, 0.1);
@@ -59,7 +177,7 @@ body::before {
 }
 
 h1 {
-    color: #000;
+    color: var(--text-color);
     margin-bottom: 20px;
     font-size: 1.8em;
 }
@@ -74,7 +192,7 @@ h1 {
 .status {
     font-size: 1.2em;
     font-weight: bold;
-    color: #000;
+    color: var(--status-text);
 }
 
 .mode-selection {
@@ -90,12 +208,12 @@ h1 {
     gap: 5px;
     font-size: 0.9em;
     cursor: pointer;
-    color: #000;
+    color: var(--text-color);
 }
 
 #restart-btn {
-    background-color: #ff69b4;
-    color: white;
+    background-color: var(--button-bg);
+    color: var(--text-color);
     border: none;
     padding: 10px 20px;
     border-radius: 5px;
@@ -106,7 +224,7 @@ h1 {
 }
 
 #restart-btn:hover {
-    background-color: #ff1493;
+    background-color: var(--button-hover);
 }
 
 .game-board {
@@ -120,8 +238,8 @@ h1 {
 .cell {
     width: 100px;
     height: 100px;
-    background-color: #fff;
-    border: 2px solid #000;
+    background-color: var(--cell-bg);
+    border: 2px solid var(--cell-border);
     font-size: 2.5em;
     display: flex;
     justify-content: center;
@@ -131,7 +249,7 @@ h1 {
 }
 
 .cell:hover {
-    background-color: #f9f9f9;
+    background-color: rgba(249, 249, 249, 0.8);
 }
 
 .cell.x {
@@ -143,7 +261,7 @@ h1 {
 }
 
 .winning-cell {
-    background-color: #ffb6c1;
+    background-color: var(--winning-cell-bg);
     animation: pulse 1s infinite;
 }
 
@@ -180,36 +298,36 @@ h1 {
 }
 
 .panel {
-    background-color: #ffc0cb;
+    background-color: var(--panel-bg);
     padding: 30px;
     border-radius: 10px;
     text-align: center;
     max-width: 300px;
     width: 80%;
-    border: 2px solid #000;
+    border: 2px solid var(--cell-border);
 }
 
 .panel h2 {
     margin-bottom: 20px;
     font-size: 1.8em;
-    color: #000;
+    color: var(--text-color);
 }
 
 .win-message {
-    color: #006400;
+    color: var(--win-message);
 }
 
 .lose-message {
-    color: #8b0000;
+    color: var(--lose-message);
 }
 
 .draw-message {
-    color: #ff8c00;
+    color: var(--draw-message);
 }
 
 #play-again-btn {
-    background-color: #ff69b4;
-    color: white;
+    background-color: var(--button-bg);
+    color: var(--text-color);
     border: none;
     padding: 12px 24px;
     border-radius: 5px;
@@ -219,24 +337,24 @@ h1 {
 }
 
 #play-again-btn:hover {
-    background-color: #ff1493;
+    background-color: var(--button-hover);
 }
 
 /* Statistics Panel */
 .stats-panel {
-    background-color: #ffc0cb;
+    background-color: var(--panel-bg);
     border-radius: 10px;
     padding: 20px;
     width: 250px;
     height: fit-content;
-    border: 2px solid #000;
+    border: 2px solid var(--cell-border);
 }
 
 .stats-panel h2 {
-    color: #000;
+    color: var(--text-color);
     text-align: center;
     margin-bottom: 20px;
-    border-bottom: 2px solid #000;
+    border-bottom: 2px solid var(--cell-border);
     padding-bottom: 10px;
 }
 
@@ -250,18 +368,18 @@ h1 {
     display: flex;
     justify-content: space-between;
     padding: 10px;
-    background-color: rgba(255, 255, 255, 0.5);
+    background-color: var(--stat-item-bg);
     border-radius: 5px;
 }
 
 .stat-label {
     font-weight: bold;
-    color: #000;
+    color: var(--text-color);
 }
 
 .stat-value {
     font-weight: bold;
-    color: #000;
+    color: var(--text-color);
 }
 
 @media (max-width: 768px) {
@@ -305,5 +423,13 @@ h1 {
         width: 300px;
         height: 300px;
         opacity: 0.08;
+    }
+    
+    .theme-toggle {
+        top: 15px;
+        left: 15px;
+        width: 40px;
+        height: 40px;
+        font-size: 1em;
     }
 }
