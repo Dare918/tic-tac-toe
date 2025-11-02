@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sentient Tic Tac Toe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="main-container">
+        <div class="game-container">
+            <div class="container">
+                <h1>Sentient Tic Tac Toe</h1>
+                <div class="game-info">
+                    <div class="status" id="status">Player X's turn</div>
+                    <div class="mode-selection">
+                        <label>
+                            <input type="radio" name="mode" value="human" checked> Human vs Human
+                        </label>
+                        <label>
+                            <input type="radio" name="mode" value="computer"> Human vs Computer
+                        </label>
+                    </div>
+                    <button id="restart-btn">Restart Game</button>
+                </div>
+                <div class="game-board" id="game-board">
+                    <div class="cell" data-index="0"></div>
+                    <div class="cell" data-index="1"></div>
+                    <div class="cell" data-index="2"></div>
+                    <div class="cell" data-index="3"></div>
+                    <div class="cell" data-index="4"></div>
+                    <div class="cell" data-index="5"></div>
+                    <div class="cell" data-index="6"></div>
+                    <div class="cell" data-index="7"></div>
+                    <div class="cell" data-index="8"></div>
+                </div>
+                
+                <!-- Win/Lose Panels -->
+                <div class="overlay" id="overlay">
+                    <div class="panel" id="result-panel">
+                        <h2 id="result-message"></h2>
+                        <button id="play-again-btn">Play Again</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistics Panel -->
+        <div class="stats-panel">
+            <h2>Statistics</h2>
+            <div class="stats-content">
+                <div class="stat-item">
+                    <span class="stat-label">Wins:</span>
+                    <span class="stat-value" id="wins-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Losses:</span>
+                    <span class="stat-value" id="losses-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Draws:</span>
+                    <span class="stat-value" id="draws-value">0</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-label">Win Rate:</span>
+                    <span class="stat-value" id="win-rate-value">0%</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<svg width="400" height="400" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">
+  <!-- Pink gradient background -->
+  <defs>
+    <linearGradient id="pinkGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#ff8fa3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#ff6b9d;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Background -->
+  <rect width="400" height="400" fill="url(#pinkGradient)"/>
+  
+  <!-- Sentient Logo Pattern (Hashtag-like structure) -->
+  <g transform="translate(100, 100)">
+    <!-- Top left square -->
+    <rect x="0" y="0" width="40" height="40" fill="white" rx="5"/>
+    
+    <!-- Top middle square -->
+    <rect x="40" y="40" width="40" height="40" fill="white" rx="5"/>
+    
+    <!-- Top right square -->
+    <rect x="80" y="0" width="40" height="40" fill="white" rx="5"/>
+    
+    <!-- Middle left square -->
+    <rect x="0" y="80" width="40" height="40" fill="white" rx="5"/>
+    
+    <!-- Center square -->
+    <rect x="60" y="60" width="40" height="40" fill="white" rx="5"/>
+    
+    <!-- Middle right square -->
+    <rect x="120" y="80" width="40" height="40" fill="white" rx="5"/>
+    
+    <!-- Bottom left square -->
+    <rect x="40" y="120" width="40" height="40" fill="white" rx="5"/>
+    
+    <!-- Bottom middle square -->
+    <rect x="80" y="160" width="40" height="40" fill="white" rx="5"/>
+    
+    <!-- Bottom right square -->
+    <rect x="120" y="120" width="40" height="40" fill="white" rx="5"/>
+  </g>
+</svg>
