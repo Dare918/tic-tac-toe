@@ -24,6 +24,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let gameBoard = ['', '', '', '', '', '', '', '', ''];
     let gameActive = true;
     let gameMode = 'human'; // 'human' or 'computer'
+    let firstPlayer = 'X'; // Track who goes first ('X' for human, 'O' for computer)
+    let gameCount = 0; // Track number of games played (0 = first game)
     
     // Theme state
     let isDarkMode = false;
@@ -62,17 +64,63 @@ document.addEventListener('DOMContentLoaded', () => {
         gameMode = 'computer';
         modeSelectionOverlay.style.display = 'none';
         initializeGame();
+        // Ensure status message is updated immediately
+        updateStatusMessage();
     });
     
     // Initialize game based on selected mode
     const initializeGame = () => {
+        // Set first player based on game count
+        // Even game numbers (0, 2, 4...) = human plays first as X
+        // Odd game numbers (1, 3, 5...) = computer plays first as X
+        firstPlayer = gameCount % 2 === 0 ? 'X' : 'O';
+        currentPlayer = firstPlayer;
+        
+        // Increment game count for next game
+        gameCount++;
+        
         // Hide mode selection radio buttons during gameplay
         document.querySelector('.mode-selection').style.display = 'none';
         
         // Update status message
-        statusElement.textContent = gameMode === 'computer' 
-            ? "Your turn (X)" 
-            : `Player ${currentPlayer}'s turn`;
+        updateStatusMessage();
+            
+        // If computer goes first as X, trigger its move
+        if (firstPlayer === 'O' && gameMode === 'computer' && gameActive && currentPlayer === 'X') {
+            setTimeout(() => {
+                if (gameActive && currentPlayer === 'X') {
+                    makeComputerMove();
+                }
+            }, 300); // 300ms delay
+        }
+    };
+    
+    // Update status message based on game state
+    const updateStatusMessage = () => {
+        if (gameMode === 'computer') {
+            if (currentPlayer === 'X') {
+                // When it's X's turn
+                if (firstPlayer === 'X') {
+                    // Human starts as X
+                    statusElement.textContent = "Your turn (X)";
+                } else {
+                    // Computer starts as X
+                    statusElement.textContent = "Computer's turn (X)";
+                }
+            } else {
+                // When it's O's turn
+                if (firstPlayer === 'X') {
+                    // Human started as X, so computer is O
+                    statusElement.textContent = "Computer's turn (O)";
+                } else {
+                    // Computer started as X, so human is O
+                    statusElement.textContent = "Your turn (O)";
+                }
+            }
+        } else {
+            // Human vs Human mode
+            statusElement.textContent = `Player ${currentPlayer}'s turn`;
+        }
     };
     
     // Handle mode selection change during gameplay (restart button)
@@ -92,21 +140,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // Check if cell is already filled or game is inactive
         if (gameBoard[index] !== '' || !gameActive) return;
         
-        // For computer mode, only allow human player (X) to make moves
-        // Computer (O) moves are handled automatically
-        if (gameMode === 'computer' && currentPlayer !== 'X') return;
+        // For computer mode, only allow appropriate player to make moves
+        if (gameMode === 'computer') {
+            // If computer starts as X (firstPlayer === 'O'), human can only play when currentPlayer is O
+            if (firstPlayer === 'O' && currentPlayer !== 'O') return;
+            // If human starts as X (firstPlayer === 'X'), human can only play when currentPlayer is X
+            if (firstPlayer === 'X' && currentPlayer !== 'X') return;
+        }
         
         // Update cell and game board
         makeMove(index);
-        
-        // If in computer mode and it's now computer's turn, let computer make a move
-        if (gameMode === 'computer' && gameActive && currentPlayer === 'O') {
-            setTimeout(() => {
-                if (gameActive && currentPlayer === 'O') {
-                    makeComputerMove();
-                }
-            }, 500); // 500ms delay
-        }
     };
     
     // Make a move on the board
@@ -122,7 +165,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             // Update statistics and show result panel
             if (gameMode === 'computer') {
-                if (currentPlayer === 'X') {
+                // Human wins if they made the last move
+                if ((firstPlayer === 'X' && currentPlayer === 'X') || (firstPlayer === 'O' && currentPlayer === 'O')) {
                     stats.wins++;
                     showResultPanel('win');
                 } else {
@@ -148,9 +192,27 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Switch player
         currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
-        statusElement.textContent = gameMode === 'computer' 
-            ? (currentPlayer === 'X' ? "Your turn (X)" : "Computer's turn (O)")
-            : `Player ${currentPlayer}'s turn`;
+        updateStatusMessage();
+            
+        // If in computer mode and it's now computer's turn, let computer make a move
+        if (gameMode === 'computer' && gameActive) {
+            // Computer plays as O when human starts as X
+            if (firstPlayer === 'X' && currentPlayer === 'O') {
+                setTimeout(() => {
+                    if (gameActive && currentPlayer === 'O') {
+                        makeComputerMove();
+                    }
+                }, 300); // 300ms delay
+            }
+            // Computer plays as X when computer starts as X
+            else if (firstPlayer === 'O' && currentPlayer === 'X') {
+                setTimeout(() => {
+                    if (gameActive && currentPlayer === 'X') {
+                        makeComputerMove();
+                    }
+                }, 300); // 300ms delay
+            }
+        }
     };
     
     // Show result panel
@@ -172,7 +234,16 @@ document.addEventListener('DOMContentLoaded', () => {
     // Computer makes a move with 70% win rate
     const makeComputerMove = () => {
         // Double-check that it's the computer's turn and game is active
-        if (!gameActive || currentPlayer !== 'O' || gameMode !== 'computer') return;
+        if (!gameActive) return;
+        
+        // Check if it's actually the computer's turn based on first player
+        let isComputerTurn = false;
+        // Computer plays as O when human starts as X
+        if (firstPlayer === 'X' && currentPlayer === 'O') isComputerTurn = true;
+        // Computer plays as X when computer starts as X
+        if (firstPlayer === 'O' && currentPlayer === 'X') isComputerTurn = true;
+        
+        if (!isComputerTurn || gameMode !== 'computer') return;
         
         let moveIndex;
         
@@ -354,10 +425,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const restartGame = () => {
         gameBoard = ['', '', '', '', '', '', '', '', ''];
         gameActive = true;
-        currentPlayer = 'X';
-        statusElement.textContent = gameMode === 'computer' 
-            ? "Your turn (X)" 
-            : `Player ${currentPlayer}'s turn`;
+        // Set first player based on game count
+        // Even game numbers (0, 2, 4...) = human plays first as X
+        // Odd game numbers (1, 3, 5...) = computer plays first as X
+        firstPlayer = gameCount % 2 === 0 ? 'X' : 'O';
+        currentPlayer = firstPlayer;
+        gameCount++;
+        
+        updateStatusMessage();
         
         cells.forEach(cell => {
             cell.textContent = '';
@@ -366,6 +441,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Hide result panel
         overlay.classList.remove('show');
+        
+        // If computer goes first as X, trigger its move
+        if (firstPlayer === 'O' && gameMode === 'computer' && gameActive && currentPlayer === 'X') {
+            setTimeout(() => {
+                if (gameActive && currentPlayer === 'X') {
+                    makeComputerMove();
+                }
+            }, 300); // 300ms delay
+        }
     };
     
     // Reset statistics
@@ -375,6 +459,7 @@ document.addEventListener('DOMContentLoaded', () => {
             losses: 0,
             draws: 0
         };
+        gameCount = 0; // Reset game count
         updateStatsDisplay();
     };
     
